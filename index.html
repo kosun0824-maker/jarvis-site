@@ -5,16 +5,39 @@
   <title>Jarvis Morning Report</title>
 </head>
 <body>
-<pre>
-Good morning, Sir.
+<pre id="output">天気を取得中です…</pre>
+
+<script>
+const url = "https://api.open-meteo.com/v1/forecast?latitude=36.02004999334118&longitude=139.32806053341153&daily=weathercode,temperature_2m_max,temperature_2m_min&timezone=Asia/Tokyo";
+
+fetch(url)
+  .then(res => res.json())
+  .then(data => {
+    const max = data.daily.temperature_2m_max[0];
+    const min = data.daily.temperature_2m_min[0];
+    const code = data.daily.weathercode[0];
+
+    let weather = "不明";
+    if (code === 0) weather = "晴れ";
+    else if (code <= 3) weather = "くもり";
+    else if (code <= 67) weather = "雨";
+    else if (code <= 77) weather = "雪";
+    else weather = "荒天";
+
+    document.getElementById("output").textContent =
+`Good morning, Sir.
 
 本日の朝報告を開始します。
 
-・現在時刻は {{TIME}} です
-・本日の主な予定は、これから統合されます
-・重要事項は特に検出されていません
+まず本日の天気です。
+${weather}。最高${max}度、最低${min}度です。
 
-それでは、本日もよろしくお願いいたします。
-</pre>
+それでは、本日もよろしくお願いいたします。`;
+  })
+  .catch(() => {
+    document.getElementById("output").textContent =
+"天気情報の取得に失敗しました。";
+  });
+</script>
 </body>
 </html>
